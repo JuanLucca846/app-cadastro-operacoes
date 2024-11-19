@@ -6,9 +6,9 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
-@Table
+@Table(name = "tb_operacoes")
 @Data
-public class Operacoes {
+public class Operacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,8 +23,8 @@ public class Operacoes {
     @Column(name = "categoria")
     private String categoria;
 
-    @Column(name = "requsicao")
-    private String requsicao;
+    @Column(name = "requisicao")
+    private String requisicao;
 
     @Column(name = "resposta")
     private String resposta;

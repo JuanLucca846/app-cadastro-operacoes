@@ -17,7 +17,7 @@ CREATE TABLE TB_OPERACOES
     nome         varchar(100) not null,
     descricao    varchar(150) not null,
     categoria    varchar(100) not null,
-    requsicao    varchar(100) not null,
+    requisicao   varchar(100) not null,
     resposta     varchar(100) not null,
     autenticacao varchar(100) not null,
     permissao    varchar(100) not null,
