@@ -11,15 +11,39 @@ DATABASE db_sistema_operacoes;
 USE
 db_sistema_operacoes;
 
+CREATE TABLE TB_USUARIOS
+(
+    id    bigint PRIMARY KEY AUTO_INCREMENT,
+    nome  varchar(100) not null,
+    idade integer      not null,
+    email varchar(150) not null,
+    senha varchar(100) not null
+);
+
 CREATE TABLE TB_OPERACOES
 (
     id           bigint PRIMARY KEY AUTO_INCREMENT,
     nome         varchar(100) not null,
     descricao    varchar(150) not null,
     categoria    varchar(100) not null,
-    requisicao   varchar(100) not null,
-    resposta     varchar(100) not null,
     autenticacao varchar(100) not null,
     permissao    varchar(100) not null,
+    usuario_id   bigint       not null references TB_USUARIOS (id),
+    dateTime     timestamp    not null
+);
+
+CREATE TABLE TB_REQUISICAO
+(
+    id         bigint PRIMARY KEY AUTO_INCREMENT,
+    usuario_id bigint    not null references TB_USUARIOS (id),
+    dateTime   timestamp not null
+);
+
+CREATE TABLE TB_RESPOSTA
+(
+    id           bigint PRIMARY KEY AUTO_INCREMENT,
+    statusCode   integer      not null,
+    mensagem     varchar(100) not null,
+    transicao_id bigint       not null references TB_REQUISICAO (id),
     dateTime     timestamp    not null
 )

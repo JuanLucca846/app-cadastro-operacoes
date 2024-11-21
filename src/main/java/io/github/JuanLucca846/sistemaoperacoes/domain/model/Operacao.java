@@ -23,17 +23,15 @@ public class Operacao {
     @Column(name = "categoria")
     private String categoria;
 
-    @Column(name = "requisicao")
-    private String requisicao;
-
-    @Column(name = "resposta")
-    private String resposta;
-
     @Column(name = "autenticacao")
     private String autenticacao;
 
     @Column(name = "permissao")
     private String permissao;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 
     @Column(name = "dateTime")
     private LocalDateTime dateTime;

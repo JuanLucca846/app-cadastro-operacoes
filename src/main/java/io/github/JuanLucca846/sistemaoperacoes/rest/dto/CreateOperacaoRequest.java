@@ -20,12 +20,6 @@ public class CreateOperacaoRequest {
     @NotBlank(message = "Categoria obrigatória.")
     private String categoria;
 
-    @NotBlank(message = "Requisição obrigatória.")
-    private String requisicao;
-
-    @NotBlank(message = "Resposta obrigatória.")
-    private String resposta;
-
     @NotBlank(message = "Autenticação obrigatória.")
     private String autenticacao;
 

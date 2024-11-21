@@ -30,8 +30,7 @@ public class OperacoesResourceTest {
         operacao.setNome("Operação de Teste");
         operacao.setDescricao("Operação de testes unitários");
         operacao.setCategoria("Test");
-        operacao.setRequisicao("?");
-        operacao.setResposta("?");
+
         operacao.setAutenticacao("JwT");
         operacao.setPermissao("Todos");
 
@@ -56,8 +55,7 @@ public class OperacoesResourceTest {
         operacao.setNome(null);
         operacao.setDescricao("Operação de testes unitários");
         operacao.setCategoria("Test");
-        operacao.setRequisicao("?");
-        operacao.setResposta("?");
+
         operacao.setAutenticacao("JwT");
         operacao.setPermissao("Todos");
 
@@ -223,8 +221,7 @@ public class OperacoesResourceTest {
         operacao.setNome(novoNome);
         operacao.setDescricao("Operação de testes unitários");
         operacao.setCategoria("Test");
-        operacao.setRequisicao("?");
-        operacao.setResposta("?");
+
         operacao.setAutenticacao("JwT");
         operacao.setPermissao("Todos");
 
@@ -240,7 +237,7 @@ public class OperacoesResourceTest {
 
 
         var idNovaOperacao = 5;
-        
+
         given()
                 .contentType(ContentType.JSON)
                 .when()

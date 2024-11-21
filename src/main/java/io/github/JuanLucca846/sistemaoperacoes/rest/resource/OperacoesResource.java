@@ -45,8 +45,6 @@ public class OperacoesResource {
         operacao.setNome(operacaoRequest.getNome());
         operacao.setDescricao(operacaoRequest.getDescricao());
         operacao.setCategoria(operacaoRequest.getCategoria());
-        operacao.setRequisicao(operacaoRequest.getRequisicao());
-        operacao.setResposta(operacaoRequest.getResposta());
         operacao.setAutenticacao(operacaoRequest.getAutenticacao());
         operacao.setPermissao(operacaoRequest.getPermissao());
 
@@ -126,8 +124,6 @@ public class OperacoesResource {
             operacao.setNome(operacaoRequest.getNome());
             operacao.setDescricao(operacaoRequest.getDescricao());
             operacao.setCategoria(operacaoRequest.getCategoria());
-            operacao.setRequisicao(operacaoRequest.getRequisicao());
-            operacao.setResposta(operacaoRequest.getResposta());
             operacao.setAutenticacao(operacaoRequest.getAutenticacao());
             operacao.setPermissao(operacaoRequest.getPermissao());
 
