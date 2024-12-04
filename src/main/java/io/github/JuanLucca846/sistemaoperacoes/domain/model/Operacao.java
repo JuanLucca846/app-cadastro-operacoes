@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_operacoes")
@@ -29,9 +31,11 @@ public class Operacao {
     @Column(name = "permissao")
     private String permissao;
 
-    @ManyToOne
-    @JoinColumn(name = "usuario_id")
-    private Usuario usuario;
+    @OneToMany(mappedBy = "operacao", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Requisicao> requisicao = new ArrayList<>();
+
+    @OneToMany(mappedBy = "operacao", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Resposta> resposta = new ArrayList<>();
 
     @Column(name = "dateTime")
     private LocalDateTime dateTime;

@@ -1,9 +1,9 @@
 package io.github.JuanLucca846.sistemaoperacoes.rest.resource;
 
 import io.github.JuanLucca846.sistemaoperacoes.domain.model.Operacao;
-import io.github.JuanLucca846.sistemaoperacoes.domain.model.Usuario;
+import io.github.JuanLucca846.sistemaoperacoes.domain.model.Requisicao;
+import io.github.JuanLucca846.sistemaoperacoes.domain.model.Resposta;
 import io.github.JuanLucca846.sistemaoperacoes.domain.repository.OperacoesRepository;
-import io.github.JuanLucca846.sistemaoperacoes.domain.repository.UsuarioRepository;
 import io.github.JuanLucca846.sistemaoperacoes.rest.dto.CreateOperacaoRequest;
 import io.github.JuanLucca846.sistemaoperacoes.rest.dto.ResponseError;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
@@ -17,39 +17,32 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Path("/api/v1")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class OperacoesResource {
 
-    private final UsuarioRepository usuarioRepository;
     private final OperacoesRepository operacoesRepository;
     private final Validator validator;
 
     @Inject
-    public OperacoesResource(UsuarioRepository usuarioRepository, OperacoesRepository operacoesRepository, Validator validator) {
-        this.usuarioRepository = usuarioRepository;
+    public OperacoesResource(OperacoesRepository operacoesRepository, Validator validator) {
         this.operacoesRepository = operacoesRepository;
         this.validator = validator;
     }
 
     @POST
-    @Path("usuarios/{usuarioId}/operacoes")
+    @Path("operacoes")
     @Transactional
-    public Response criarOperacao(@PathParam("usuarioId") Long usuarioId, CreateOperacaoRequest operacaoRequest) {
+    public Response criarOperacao(CreateOperacaoRequest operacaoRequest) {
         Set<ConstraintViolation<CreateOperacaoRequest>> violations = validator.validate(operacaoRequest);
 
         if (!violations.isEmpty()) {
-            return ResponseError
-                    .createFromValidation(violations)
-                    .withStatusCode(ResponseError.UNPROCESSABLE_ENTITY_STATUS);
+            return ResponseError.createFromValidation(violations).withStatusCode(ResponseError.UNPROCESSABLE_ENTITY_STATUS);
         }
 
-        Usuario usuario = usuarioRepository.findById(usuarioId);
-        if (usuario == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
 
         Operacao operacao = new Operacao();
         operacao.setNome(operacaoRequest.getNome());
@@ -57,15 +50,32 @@ public class OperacoesResource {
         operacao.setCategoria(operacaoRequest.getCategoria());
         operacao.setAutenticacao(operacaoRequest.getAutenticacao());
         operacao.setPermissao(operacaoRequest.getPermissao());
-        operacao.setUsuario(usuario);
+
+        List<Requisicao> requisicoes = operacaoRequest.getRequisicao().stream().map(requisicaoRequest -> {
+            Requisicao requisicao = new Requisicao();
+            requisicao.setNome(requisicaoRequest.getNome());
+            requisicao.setTipo(requisicaoRequest.getTipo());
+            requisicao.setOperacao(operacao);
+            return requisicao;
+        }).collect(Collectors.toList());
+
+
+        List<Resposta> respostas = operacaoRequest.getResposta().stream().map(respostaRequest -> {
+            Resposta resposta = new Resposta();
+            resposta.setNome(respostaRequest.getNome());
+            resposta.setTipo(respostaRequest.getTipo());
+            resposta.setOperacao(operacao);
+            return resposta;
+        }).collect(Collectors.toList());
+
+        operacao.setRequisicao(requisicoes);
+        operacao.setResposta(respostas);
 
 
         operacoesRepository.persist(operacao);
 
-        return Response
-                .status(Response.Status.CREATED.getStatusCode())
-                .entity(operacao)
-                .build();
+
+        return Response.status(Response.Status.CREATED.getStatusCode()).entity(operacao).build();
     }
 
     @GET
@@ -87,51 +97,25 @@ public class OperacoesResource {
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 
+
     @GET
-    @Path("operacoes/nome")
-    public Response buscarPorNome(@QueryParam("nome") String nome) {
-        List<Operacao> operacao = operacoesRepository.findByNome(nome);
+    @Path("operacoes/busca")
+    public Response buscarPorNomeDescricaoCategoria(@QueryParam("parametro") String parametro) {
+        List<Operacao> operacao = operacoesRepository.buscarOperacaoNomeDescCat(parametro);
 
         if (operacao.isEmpty()) {
-            throw new NotFoundException("Nenhuma operação com esse nome encontrado.");
+            throw new NotFoundException("Nenhuma operação encontrada.");
         }
 
         return Response.ok(operacao).build();
     }
 
-    @GET
-    @Path("operacoes/descricao")
-    public Response buscarPorDescricao(@QueryParam("descricao") String descricao) {
-        List<Operacao> operacao = operacoesRepository.findByDescricao(descricao);
-
-        if (operacao.isEmpty()) {
-            throw new NotFoundException("Nenhuma operação com essa descrição encontrada.");
-        }
-
-        return Response.ok(operacao).build();
-    }
-
-    @GET
-    @Path("operacoes/categoria")
-    public Response buscarPorCategoria(@QueryParam("categoria") String categoria) {
-        List<Operacao> operacao = operacoesRepository.findByCategoria(categoria);
-
-        if (operacao.isEmpty()) {
-            throw new NotFoundException("Nenhuma operação com essa categoria encontrada.");
-        }
-
-        return Response.ok(operacao).build();
-    }
 
     @PUT
     @Transactional
-    @Path("/usuarios/{usuarioId}/operacoes/{id}")
-    public Response atualizarOperacao(@PathParam("id") Long id, @PathParam("usuarioId") Long usuarioId, CreateOperacaoRequest operacaoRequest) {
+    @Path("operacoes/{id}")
+    public Response atualizarOperacao(@PathParam("id") Long id, CreateOperacaoRequest operacaoRequest) {
 
-        Usuario usuario = usuarioRepository.findById(usuarioId);
-        if (usuario == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
 
         Operacao buscarOperacaoExistente = operacoesRepository.findById(id);
         if (buscarOperacaoExistente != null) {
@@ -143,11 +127,43 @@ public class OperacoesResource {
             operacao.setAutenticacao(operacaoRequest.getAutenticacao());
             operacao.setPermissao(operacaoRequest.getPermissao());
 
+            List<Requisicao> requisicoes = operacaoRequest.getRequisicao().stream().map(requisicaoRequest -> {
+                Requisicao requisicao = new Requisicao();
+                requisicao.setNome(requisicaoRequest.getNome());
+                requisicao.setTipo(requisicaoRequest.getTipo());
+                requisicao.setOperacao(operacao);
+                return requisicao;
+            }).collect(Collectors.toList());
+
+
+            List<Resposta> respostas = operacaoRequest.getResposta().stream().map(respostaRequest -> {
+                Resposta resposta = new Resposta();
+                resposta.setNome(respostaRequest.getNome());
+                resposta.setTipo(respostaRequest.getTipo());
+                resposta.setOperacao(operacao);
+                return resposta;
+            }).collect(Collectors.toList());
+
+            operacao.setRequisicao(requisicoes);
+            operacao.setResposta(respostas);
+
             operacoesRepository.persist(operacao);
             return Response.ok(operacao).build();
         }
 
 
         return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    @DELETE
+    @Transactional
+    @Path("operacoes/{id}")
+    public Response deletarOperacao(@PathParam("id") Long id) {
+        Operacao operacao = operacoesRepository.findById(id);
+        if (operacao != null) {
+            operacoesRepository.delete(operacao);
+        }
+
+        return Response.status(Response.Status.NO_CONTENT.getStatusCode()).build();
     }
 }

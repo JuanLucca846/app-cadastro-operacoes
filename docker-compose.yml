@@ -1,6 +1,17 @@
-version: '3.8'
-
 services:
+  db:
+    image: mysql
+    container_name: cadastro-operacoes_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cadastro_operacoes
+      MYSQL_PASSWORD: root
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+
 
   app:
     build:
@@ -10,3 +21,9 @@ services:
     container_name: cadastrodeoperacoes-app
     ports:
       - "8080:8080"
+    depends_on:
+      - db
+
+volumes:
+  mysql_data:
+    driver: local

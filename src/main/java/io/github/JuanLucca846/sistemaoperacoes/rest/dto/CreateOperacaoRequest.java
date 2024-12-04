@@ -1,10 +1,14 @@
 package io.github.JuanLucca846.sistemaoperacoes.rest.dto;
 
-import jakarta.persistence.Column;
+import io.github.JuanLucca846.sistemaoperacoes.domain.model.Requisicao;
+import io.github.JuanLucca846.sistemaoperacoes.domain.model.Resposta;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,4 +29,10 @@ public class CreateOperacaoRequest {
 
     @NotBlank(message = "Permissão obrigatória.")
     private String permissao;
+
+    @NotEmpty(message = "Requisição obrigatória")
+    private List<Requisicao> requisicao;
+
+    @NotEmpty(message = "Resposta obrigatória")
+    private List<Resposta> resposta;
 }

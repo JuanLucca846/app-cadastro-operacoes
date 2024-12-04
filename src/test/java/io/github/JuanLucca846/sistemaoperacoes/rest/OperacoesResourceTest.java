@@ -1,5 +1,7 @@
 package io.github.JuanLucca846.sistemaoperacoes.rest;
 
+import io.github.JuanLucca846.sistemaoperacoes.domain.model.Requisicao;
+import io.github.JuanLucca846.sistemaoperacoes.domain.model.Resposta;
 import io.github.JuanLucca846.sistemaoperacoes.rest.dto.CreateOperacaoRequest;
 import io.github.JuanLucca846.sistemaoperacoes.rest.dto.ResponseError;
 import io.quarkus.test.common.http.TestHTTPResource;
@@ -26,13 +28,23 @@ public class OperacoesResourceTest {
     @DisplayName("Deve criar uma nova operação com sucesso")
     @Order(1)
     public void criarOperacaoTest() {
+
+        var requisicao = new Requisicao();
+        requisicao.setNome("Nome");
+        requisicao.setTipo("String");
+
+        var resposta = new Resposta();
+        resposta.setNome("Mensagem");
+        resposta.setTipo("String");
+
         var operacao = new CreateOperacaoRequest();
         operacao.setNome("Operação de Teste");
         operacao.setDescricao("Operação de testes unitários");
         operacao.setCategoria("Test");
-
         operacao.setAutenticacao("JwT");
         operacao.setPermissao("Todos");
+        operacao.setRequisicao(List.of(requisicao));
+        operacao.setResposta(List.of(resposta));
 
         var response =
                 given()
@@ -51,13 +63,23 @@ public class OperacoesResourceTest {
     @DisplayName("Deve retornar erro ao criar uma operação")
     @Order(2)
     public void retornarErroAoCriarOperacaoTest() {
+
+        var requisicao = new Requisicao();
+        requisicao.setNome("Nome");
+        requisicao.setTipo("String");
+
+        var resposta = new Resposta();
+        resposta.setNome("Mensagem");
+        resposta.setTipo("String");
+
         var operacao = new CreateOperacaoRequest();
         operacao.setNome(null);
         operacao.setDescricao("Operação de testes unitários");
         operacao.setCategoria("Test");
-
         operacao.setAutenticacao("JwT");
         operacao.setPermissao("Todos");
+        operacao.setRequisicao(List.of(requisicao));
+        operacao.setResposta(List.of(resposta));
 
         var response = given()
                 .contentType(ContentType.JSON)
@@ -104,8 +126,8 @@ public class OperacoesResourceTest {
                 .body("nome", Matchers.is("Operação de Teste"))
                 .body("descricao", Matchers.is("Operação de testes unitários"))
                 .body("categoria", Matchers.is("Test"))
-                .body("requisicao", Matchers.is("?"))
-                .body("resposta", Matchers.is("?"))
+                .body("requisicao", Matchers.not(Matchers.empty()))
+                .body("resposta", Matchers.not(Matchers.empty()))
                 .body("autenticacao", Matchers.is("JwT"))
                 .body("permissao", Matchers.is("Todos"));
     }
@@ -217,13 +239,22 @@ public class OperacoesResourceTest {
         var id = 4;
         var novoNome = "Operação de Teste Atualizada";
 
+        var requisicao = new Requisicao();
+        requisicao.setNome("Nome");
+        requisicao.setTipo("String");
+
+        var resposta = new Resposta();
+        resposta.setNome("Mensagem");
+        resposta.setTipo("String");
+
         var operacao = new CreateOperacaoRequest();
         operacao.setNome(novoNome);
         operacao.setDescricao("Operação de testes unitários");
         operacao.setCategoria("Test");
-
         operacao.setAutenticacao("JwT");
         operacao.setPermissao("Todos");
+        operacao.setRequisicao(List.of(requisicao));
+        operacao.setResposta(List.of(resposta));
 
 
         given()

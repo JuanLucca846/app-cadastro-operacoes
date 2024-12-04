@@ -10,18 +10,11 @@ import java.util.List;
 @ApplicationScoped
 public class OperacoesRepository implements PanacheRepository<Operacao> {
 
-    public List<Operacao> findByNome(String nome) {
-        PanacheQuery<Operacao> query = find("nome", nome);
-        return query.list();
+    public List<Operacao> buscarOperacaoNomeDescCat(String parametro) {
+        PanacheQuery<Operacao> query = find("nome like ?1 or descricao like ?1 or categoria like ?1", "%" + parametro + "%");
+
+        return (query).list();
     }
 
-    public List<Operacao> findByDescricao(String descricao) {
-        PanacheQuery<Operacao> query = find("descricao", descricao);
-        return query.list();
-    }
 
-    public List<Operacao> findByCategoria(String categoria) {
-        PanacheQuery<Operacao> query = find("categoria", categoria);
-        return query.list();
-    }
 }
